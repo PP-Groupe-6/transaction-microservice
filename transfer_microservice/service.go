@@ -30,10 +30,10 @@ var (
 )
 
 type transferService struct {
-	DbInfos dbConnexionInfo
+	DbInfos DbConnexionInfo
 }
 
-func NewTransferService(dbinfos dbConnexionInfo) TransferService {
+func NewTransferService(dbinfos DbConnexionInfo) TransferService {
 	return &transferService{
 		DbInfos: dbinfos,
 	}
