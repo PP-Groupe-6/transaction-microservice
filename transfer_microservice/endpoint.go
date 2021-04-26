@@ -137,7 +137,7 @@ type CreateResponse struct {
 	Type                        string `json:"transferType,omitempty"`
 	Amount                      string `json:"transferAmount,omitempty"`
 	EmailAdressTransferPayer    string `json:"mailAdressTransferPayer,omitempty"`
-	EmailAdressTransferReceiver string `json:"mailAdressTransferReceiver ,omitempty"`
+	EmailAdressTransferReceiver string `json:"mailAdressTransferReceiver,omitempty"`
 	ReceiverQuestion            string `json:"receiverQuestion,omitempty"`
 	ReceiverAnswer              string `json:"receiverAnswer,omitempty"`
 	ExecutionTransferDate       string `json:"executionTransferDate,omitempty"`
