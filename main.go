@@ -17,7 +17,7 @@ func main() {
 		Password: "dev",
 	}
 
-	service := transferService.NewInvoiceService(info)
+	service := transferService.NewTransferService(info)
 
 	var logger log.Logger
 	{
