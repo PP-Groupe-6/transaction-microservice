@@ -58,7 +58,6 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 	// Dans un premier temps on récupère le solde du payeur
 	payerBalance := float64(0.0)
 
-	fmt.Println(TransferToPay.AccountPayerId)
 	errPB := db.Get(&payerBalance, "SELECT account_amount FROM account WHERE client_id=$1", TransferToPay.AccountPayerId)
 
 	// On récupère ensuite le solde du receveur
