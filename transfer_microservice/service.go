@@ -47,21 +47,30 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 		return false, ErrNotAnId
 	}
 
-	TransferToPay, _ := s.Read(ctx, id)
+	TransferToPay, errorR := s.Read(ctx, id)
 
-	if (TransferToPay == Transfer{}) {
+	if (TransferToPay == Transfer{} && errorR != nil) {
 		return false, ErrNotFound
 	}
+
 	db := GetDbConnexion(s.DbInfos)
+
 	// Dans un premier temps on récupère le solde du payeur
 	payerBalance := float64(0.0)
-	errPB := db.Get(&payerBalance, "SELECT amount FROM account WHERE client_id=$1", TransferToPay.AccountPayerId)
+
+	fmt.Println(TransferToPay.AccountPayerId)
+	errPB := db.Get(&payerBalance, "SELECT account_amount FROM account WHERE client_id=$1", TransferToPay.AccountPayerId)
 
 	// On récupère ensuite le solde du receveur
 	recieverBalance := float64(0.0)
-	errRB := db.Get(&payerBalance, "SELECT amount FROM account WHERE client_id=$1", TransferToPay.AccountReceiverId)
+	errRB := db.Get(&recieverBalance, "SELECT account_amount FROM account WHERE client_id=$1", TransferToPay.AccountReceiverId)
 
-	if errPB != nil || errRB != nil {
+	if errPB != nil {
+		fmt.Println("Payer balance error")
+		return false, ErrNotFound
+	}
+	if errRB != nil {
+		fmt.Println("Reciever balance error")
 		return false, ErrNotFound
 	}
 
@@ -78,12 +87,14 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 		tx.Rollback()
 		return false, errUpdate
 	}
+
 	// On mets à jour le solde du receveur
 	resReciever := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(recieverBalance+TransferToPay.Amount)+"' WHERE client_id=$1", TransferToPay.AccountPayerId)
 	if rows, errUpdate := resReciever.RowsAffected(); rows != 1 {
 		tx.Rollback()
 		return false, errUpdate
 	}
+
 	//On change l'état de la facture a payer
 	resInvoice := tx.MustExec("UPDATE transfer SET transfer_state = '"+fmt.Sprint(PAID)+"' WHERE transfer_id=$1", TransferToPay.ID)
 	if rows, errUpdate := resInvoice.RowsAffected(); rows != 1 {
@@ -93,6 +104,7 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 
 	tx.Commit()
 	db.Close()
+
 	return true, nil
 }
 
