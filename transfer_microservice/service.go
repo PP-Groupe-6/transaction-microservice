@@ -2,7 +2,6 @@ package transfer_microservice
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -202,13 +201,7 @@ func (s *transferService) Create(ctx context.Context, transfer Transfer) (Transf
 	//validations
 
 	tx := db.MustBegin()
-	var res sql.Result
-	if transfer.ExecutionDate == "" {
-		res = tx.MustExec("INSERT INTO transfer VALUES ('" + id.String() + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "')")
-	} else {
-		res = tx.MustExec("INSERT INTO transfer VALUES ('" + id.String() + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ExecutionDate + "')")
-	}
-
+	res := tx.MustExec("INSERT INTO transfer VALUES ('" + id.String() + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ExecutionDate + "')")
 	tx.Commit()
 	db.Close()
 
