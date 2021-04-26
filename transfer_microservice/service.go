@@ -194,6 +194,7 @@ func (s *transferService) Create(ctx context.Context, transfer Transfer) (Transf
 	}
 	id := xid.New()
 	db := GetDbConnexion(s.DbInfos)
+	transfer.ID = id.String()
 
 	//validations
 
@@ -209,7 +210,12 @@ func (s *transferService) Create(ctx context.Context, transfer Transfer) (Transf
 		return Transfer{}, ErrNoInsert
 	}
 
-	return s.Read(ctx, transfer.ID)
+	inserted, err := s.Read(ctx, transfer.ID)
+	if err != nil {
+		return Transfer{}, err
+	}
+
+	return inserted, nil
 
 }
 

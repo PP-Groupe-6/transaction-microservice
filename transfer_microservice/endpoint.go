@@ -133,7 +133,7 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
-	Added bool `json:"added"`
+	TransferResponse Transfer `json:"transfer"`
 }
 
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
@@ -167,9 +167,9 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 
 		transfer, err := s.Create(ctx, toAdd)
 		if (err == nil && transfer != Transfer{}) {
-			return CreateResponse{true}, nil
+			return CreateResponse{TransferResponse: transfer}, nil
 		} else {
-			return CreateResponse{false}, err
+			return CreateResponse{TransferResponse: Transfer{}}, err
 		}
 	}
 }
