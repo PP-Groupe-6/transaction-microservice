@@ -31,7 +31,7 @@ var (
 	ErrNoInsert        = errors.New("insert did not go through")
 	ErrInconsistentIDs = errors.New("could not access database")
 	ErrNotEnoughMoney  = errors.New("payer account has not enough money")
-	ErrMailNotFound    = errors.New("could not find id linked to mail")
+	ErrIDNotFound      = errors.New("could not find id linked to mail")
 )
 
 type transferService struct {
@@ -113,11 +113,10 @@ func (s *transferService) GetIdFromMail(ctx context.Context, mail string) (strin
 
 	var res string
 
-	err := db.Get(&res, "SELECT client_id FROM account where mail_adress=$1", mail)
+	err := db.Get(&res, "SELECT client_id FROM account WHERE mail_adress=$1", mail)
 
-	fmt.Println(res)
 	if err != nil {
-		return "", ErrMailNotFound
+		return "", ErrIDNotFound
 	}
 
 	return res, nil
