@@ -3,7 +3,6 @@ package transfer_microservice
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -140,7 +139,7 @@ type CreateResponse struct {
 	EmailAdressTransferReceiver string `json:"transfer_receiver_mail,omitempty"`
 	ReceiverQuestion            string `json:"receiver_question,omitempty"`
 	ReceiverAnswer              string `json:"receiver_answer,omitempty"`
-	ExecutionDate               string `json:"executed_transfer_date,omitempty"`
+	ExecutionTransferDate       string `json:"executed_transfer_date,omitempty"`
 }
 
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
@@ -157,12 +156,7 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 			fmt.Print("Reciever ID not found")
 			return nil, err
 		}
-		var date string
-		if req.TransferType == "instant" {
-			date = time.Now().Format("2006-01-02")
-		} else if req.TransferType == "scheduled" {
-			date = req.ExecutionTransferDate
-		}
+
 		toAdd := Transfer{
 			ID:                "",
 			Type:              req.TransferType,
@@ -172,7 +166,7 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 			AccountReceiverId: idReceiver,
 			ReceiverQuestion:  req.ReceiverQuestion,
 			ReceiverAnswer:    req.ReceiverAnswer,
-			ExecutionDate:     date,
+			ExecutionDate:     req.ExecutionTransferDate,
 		}
 
 		transfer, err := s.Create(ctx, toAdd)
