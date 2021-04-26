@@ -133,13 +133,13 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
-	Type                        string `json:"transfer_type,omitempty"`
-	Amount                      string `json:"transfer_amount,omitempty"`
-	EmailAdressTransferPayer    string `json:"transfer_payer_mail,omitempty"`
-	EmailAdressTransferReceiver string `json:"transfer_receiver_mail,omitempty"`
-	ReceiverQuestion            string `json:"receiver_question,omitempty"`
-	ReceiverAnswer              string `json:"receiver_answer,omitempty"`
-	ExecutionTransferDate       string `json:"executed_transfer_date,omitempty"`
+	Type                        string `json:"transferType,omitempty"`
+	Amount                      string `json:"transferAmount,omitempty"`
+	EmailAdressTransferPayer    string `json:"emailAdressTransferPayer,omitempty"`
+	EmailAdressTransferReceiver string `json:"emailAdressTransferReceiver ,omitempty"`
+	ReceiverQuestion            string `json:"receiverQuestion,omitempty"`
+	ReceiverAnswer              string `json:"receiverAnswer,omitempty"`
+	ExecutionTransferDate       string `json:"executionTransferDate,omitempty"`
 }
 
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
