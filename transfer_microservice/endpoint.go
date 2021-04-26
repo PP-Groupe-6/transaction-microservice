@@ -146,6 +146,8 @@ type CreateResponse struct {
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateRequest)
+		fmt.Println(req.EmailAdressTransferPayer)
+		fmt.Println(req.EmailAdressTransferReceiver)
 		idPayer, err := s.GetIdFromMail(ctx, req.EmailAdressTransferPayer)
 		if err != nil {
 			fmt.Println("Payer ID not found")
