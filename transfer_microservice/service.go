@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 )
 
 type TransferService interface {
@@ -15,6 +14,9 @@ type TransferService interface {
 	GetWaitingTransfer(ctx context.Context, id string) ([]*Transfer, error)
 	GetTransferList(ctx context.Context, id string) ([]*Transfer, error)
 	UpdateTransferStatus(ctx context.Context, id string) error
+	GetAccountInformation(ctx context.Context, id string) (AccountInfo, error)
+	GetIdFromMail(ctx context.Context, mail string) (string, error)
+	PostTransferStatus(ctx context.Context, id string) (bool, error)
 }
 
 var (
@@ -38,6 +40,84 @@ func NewTransferService(dbinfos DbConnexionInfo) TransferService {
 		DbInfos: dbinfos,
 	}
 }
+func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bool, error) {
+	if id == "" {
+		return false, ErrNotAnId
+	}
+
+	TransferToPay, _ := s.Read(ctx, id)
+
+	if (TransferToPay == Transfer{}) {
+		return false, ErrNotFound
+	}
+	db := GetDbConnexion(s.DbInfos)
+	// Dans un premier temps on récupère le solde du payeur
+	payerBalance := float64(0.0)
+	errPB := db.Get(&payerBalance, "SELECT amount FROM account WHERE client_id=$1", TransferToPay.AccountPayerId)
+
+	// On récupère ensuite le solde du receveur
+	recieverBalance := float64(0.0)
+	errRB := db.Get(&payerBalance, "SELECT amount FROM account WHERE client_id=$1", TransferToPay.AccountReceiverId)
+
+	if errPB != nil || errRB != nil {
+		return false, ErrNotFound
+	}
+
+	// On regarde si le payeur a les fonds pour payer la facture
+	if payerBalance < TransferToPay.Amount {
+		return false, ErrNotEnoughMoney
+	}
+
+	tx := db.MustBegin()
+	// On mets à jour le solde du payeur
+	resPayer := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(payerBalance-TransferToPay.Amount)+"' WHERE client_id=$1", TransferToPay.AccountPayerId)
+
+	if rows, errUpdate := resPayer.RowsAffected(); rows != 1 {
+		tx.Rollback()
+		return false, errUpdate
+	}
+	// On mets à jour le solde du receveur
+	resReciever := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(recieverBalance+TransferToPay.Amount)+"' WHERE client_id=$1", TransferToPay.AccountPayerId)
+	if rows, errUpdate := resReciever.RowsAffected(); rows != 1 {
+		tx.Rollback()
+		return false, errUpdate
+	}
+	//On change l'état de la facture a payer
+	resInvoice := tx.MustExec("UPDATE transfer SET transfer_state = '"+fmt.Sprint(PAID)+"' WHERE transfer_id=$1", TransferToPay.ID)
+	if rows, errUpdate := resInvoice.RowsAffected(); rows != 1 {
+		tx.Rollback()
+		return false, errUpdate
+	}
+
+	tx.Commit()
+	db.Close()
+	return true, nil
+}
+
+func (s *transferService) GetIdFromMail(ctx context.Context, mail string) (string, error) {
+	db := GetDbConnexion(s.DbInfos)
+
+	var res string
+
+	err := db.Get(&res, "SELECT client_id FROM account where mail_adress=$1", mail)
+	if err != nil {
+		return "", ErrNotFound
+	}
+
+	return res, err
+}
+
+func (s *transferService) GetAccountInformation(ctx context.Context, id string) (AccountInfo, error) {
+	db := GetDbConnexion(s.DbInfos)
+
+	res := AccountInfo{}
+	err := db.Get(&res, "SELECT name, surname, mail_adress, account_amount FROM account where client_id=$1", id)
+
+	if err != nil {
+		return AccountInfo{}, err
+	}
+	return res, err
+}
 
 func (s *transferService) UpdateTransferStatus(ctx context.Context, id string) error {
 	transfer, err := s.Read(ctx, id)
@@ -46,22 +126,8 @@ func (s *transferService) UpdateTransferStatus(ctx context.Context, id string) e
 	}
 	db := GetDbConnexion(s.DbInfos)
 
-	fmt.Println(transfer)
-	var amount string
-	err = db.Select(&amount, "SELECT account_amount FROM account WHERE client_id='"+transfer.AccountPayerId+"')")
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(amount)
-
-	if s, _ := strconv.ParseFloat(amount, 64); s < transfer.Amount {
-		return ErrNotEnoughMoney
-	}
-
 	tx := db.MustBegin()
-	tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(transfer.State)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', scheduled_transfer_date = '"+transfer.ScheduledDate+"', executed_transfer_date = '"+transfer.ExecutedDate+"' WHERE transfer_id=$1", id)
+	tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(transfer.State)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', executed_transfer_date = '"+transfer.ExecutionDate+"' WHERE transfer_id=$1", id)
 	tx.Commit()
 	db.Close()
 
@@ -118,7 +184,7 @@ func (s *transferService) Create(ctx context.Context, transfer Transfer) (Transf
 	//validations
 
 	tx := db.MustBegin()
-	res := tx.MustExec("INSERT INTO transfer VALUES ('" + transfer.ID + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ScheduledDate + "','" + transfer.ExecutedDate + "')")
+	res := tx.MustExec("INSERT INTO transfer VALUES ('" + transfer.ID + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ExecutionDate + "')")
 	tx.Commit()
 	db.Close()
 
@@ -157,7 +223,7 @@ func (s *transferService) Update(ctx context.Context, id string, transfer Transf
 
 	db := GetDbConnexion(s.DbInfos)
 	tx := db.MustBegin()
-	res := tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(transfer.State)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', scheduled_transfer_date = '"+transfer.ScheduledDate+"', executed_transfer_date = '"+transfer.ExecutedDate+"' WHERE transfer_id=$1", id)
+	res := tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(transfer.State)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', executed_transfer_date = '"+transfer.ExecutionDate+"' WHERE transfer_id=$1", id)
 	tx.Commit()
 	db.Close()
 

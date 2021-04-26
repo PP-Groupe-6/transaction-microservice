@@ -17,7 +17,7 @@ var (
 	ErrBadRouting = errors.New("inconsistent mapping between route and handler (programmer error)")
 )
 
-func MakeHTTPhander(s TransferService, logger log.Logger) http.Handler {
+func MakeHTTPHandler(s TransferService, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	e := MakeTransferEndpoints(s)
 	options := []httptransport.ServerOption{

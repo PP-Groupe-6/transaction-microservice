@@ -9,6 +9,12 @@ type Transfer struct {
 	AccountReceiverId string  `json:"transfer_receiver_id,omitempty" db:"account_transfer_receiver_id"`
 	ReceiverQuestion  string  `json:"receiver_question,omitempty" db:"receiver_question"`
 	ReceiverAnswer    string  `json:"receiver_answer,omitempty" db:"receiver_answer"`
-	ScheduledDate     string  `json:"scheduled_transfer_date,omitempty" db:"scheduled_transfer_date"`
-	ExecutedDate      string  `json:"executed_transfer_date,omitempty" db:"executed_transfer_date"`
+	ExecutionDate     string  `json:"executed_transfer_date,omitempty" db:"executed_transfer_date"`
+}
+
+type AccountInfo struct {
+	Name    string  `json:"name,omitempty" db:"name"`
+	Surname string  `json:"surname,omitempty" db:"surname"`
+	Mail    string  `json:"mail,omitempty" db:"mail"`
+	Amount  float64 `json:"amount,omitempty" db:"account_amount"`
 }
