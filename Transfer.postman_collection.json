@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "e41ff84e-1bff-424d-a89d-eb7a3bcdf4ed",
+		"name": "Transfer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List transfers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"ClientID\": \"sIowRDsqanK3vj0jfRVn1i8yLrmJfu93qDDlZwkeHFl4td0W2czjJbutqwibI8iaQJ7skSHtLpWHUtfN7gFQ0f40e6J1Fie4LeuRrmLHkxfpr6bv5VOYpwGvDyoux7Zus0fw2R2IRWEr3CqKtrohdX8t9pf37I17WoSVFg83hrb18BoKD3h989i3I36GAjXGLyEWbj6RsD6lt5TEQOjwJEZDZTeBOUOq0fNOUFmEW47cEgQ2R4DvIj5AN2iPDsv\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8001/transfer/",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"transfer",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List waiting transfers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"ClientID\": \"zob\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8001/transfer/waiting",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"transfer",
+						"waiting"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"EmailAdressTransferPayer\":\"codixos@gmail.com\",\r\n    \"EmailAdressTransferReceiver\": \"a@a.a\",\r\n    \"TransferAmount\":17,\r\n    \"TransferType\":\"instant\",\r\n    \"ReceiverQuestion\":\"salut ça va ?\",\r\n    \"ReceiverAnswer\":\"oui\",\r\n    \"ExecutionTransferDate\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8001/transfer/",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"transfer",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pay transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"transfer_id\" : \"OcLBM1tQdBUBLQ83mObCfBTM3rKLuXQ45gz1OZuXdH4iN2pSGy3i7lgeqiEdkXEaVUQWWKUcIogcYl9hUJWdD7jbR5dsFNpGZeJKYW6sVGS2grlQ4RCFigVD5iZMbJ9b1wcQ82I1bHOaikQNXXmArzS9RayYfjIZ5cJaIlrQWCEPALuDiv8frfMpQAzyYUWfCV3UydwyUvON4SOhoGdzYynYdpyTjXfKbdDF0nb8J3Jvf7zKk8YDxHQbhTs2abb\"\r\n}\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8001/transfer/pay",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"transfer",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

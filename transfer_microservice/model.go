@@ -15,6 +15,6 @@ type Transfer struct {
 type AccountInfo struct {
 	Name    string  `json:"name,omitempty" db:"name"`
 	Surname string  `json:"surname,omitempty" db:"surname"`
-	Mail    string  `json:"mail,omitempty" db:"mail"`
+	Mail    string  `json:"mail_adress,omitempty" db:"mail_adress"`
 	Amount  float64 `json:"amount,omitempty" db:"account_amount"`
 }

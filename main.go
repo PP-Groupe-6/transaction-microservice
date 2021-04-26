@@ -26,7 +26,7 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	err := http.ListenAndServe(":8000", transferService.MakeHTTPHandler(service, logger))
+	err := http.ListenAndServe(":8001", transferService.MakeHTTPHandler(service, logger))
 	if err != nil {
 		panic(err)
 	}
