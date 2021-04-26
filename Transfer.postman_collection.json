@@ -18,11 +18,11 @@
 					"raw": "{\r\n\t\"ClientID\": \"sIowRDsqanK3vj0jfRVn1i8yLrmJfu93qDDlZwkeHFl4td0W2czjJbutqwibI8iaQJ7skSHtLpWHUtfN7gFQ0f40e6J1Fie4LeuRrmLHkxfpr6bv5VOYpwGvDyoux7Zus0fw2R2IRWEr3CqKtrohdX8t9pf37I17WoSVFg83hrb18BoKD3h989i3I36GAjXGLyEWbj6RsD6lt5TEQOjwJEZDZTeBOUOq0fNOUFmEW47cEgQ2R4DvIj5AN2iPDsv\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8000/transfer/",
+					"raw": "localhost:8001/transfer/",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "8001",
 					"path": [
 						"transfer",
 						""
@@ -44,11 +44,11 @@
 					"raw": "{\r\n\t\"ClientID\": \"zob\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8000/transfer/waiting",
+					"raw": "localhost:8001/transfer/waiting",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "8001",
 					"path": [
 						"transfer",
 						"waiting"
@@ -72,11 +72,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/transfer/",
+					"raw": "localhost:8001/transfer/",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "8001",
 					"path": [
 						"transfer",
 						""
@@ -100,11 +100,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/transfer/pay",
+					"raw": "localhost:8001/transfer/pay",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "8001",
 					"path": [
 						"transfer",
 						"pay"
