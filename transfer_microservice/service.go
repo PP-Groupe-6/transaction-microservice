@@ -113,7 +113,7 @@ func (s *transferService) GetIdFromMail(ctx context.Context, mail string) (strin
 
 	var res string
 
-	err := db.Get(&res, "SELECT client_id FROM account WHERE mail_adress=$1", mail)
+	err := db.Get(&res, "SELECT client_id FROM account WHERE mail_adress='$1'", mail)
 
 	if err != nil {
 		return "", ErrIDNotFound
