@@ -148,12 +148,12 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 		req := request.(CreateRequest)
 		idPayer, err := s.GetIdFromMail(ctx, req.EmailAdressTransferPayer)
 		if err != nil {
-			fmt.Print("Payer mail not found")
+			fmt.Println("Payer ID not found")
 			return nil, err
 		}
 		idReceiver, err := s.GetIdFromMail(ctx, req.EmailAdressTransferReceiver)
 		if err != nil {
-			fmt.Print("Reciever mail not found")
+			fmt.Print("Reciever ID not found")
 			return nil, err
 		}
 		var date string
