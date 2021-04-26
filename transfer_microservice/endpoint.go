@@ -2,6 +2,7 @@ package transfer_microservice
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
@@ -133,7 +134,13 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
-	TransferResponse Transfer `json:"transfer"`
+	Type                        string `json:"transfer_type,omitempty"`
+	Amount                      string `json:"transfer_amount,omitempty"`
+	EmailAdressTransferPayer    string `json:"transfer_payer_mail,omitempty"`
+	EmailAdressTransferReceiver string `json:"transfer_receiver_mail,omitempty"`
+	ReceiverQuestion            string `json:"receiver_question,omitempty"`
+	ReceiverAnswer              string `json:"receiver_answer,omitempty"`
+	ExecutionDate               string `json:"executed_transfer_date,omitempty"`
 }
 
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
@@ -167,9 +174,17 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 
 		transfer, err := s.Create(ctx, toAdd)
 		if (err == nil && transfer != Transfer{}) {
-			return CreateResponse{TransferResponse: transfer}, nil
+			return CreateResponse{
+				transfer.Type,
+				fmt.Sprint(transfer.Amount),
+				req.EmailAdressTransferPayer,
+				req.EmailAdressTransferReceiver,
+				transfer.ReceiverQuestion,
+				transfer.ReceiverAnswer,
+				transfer.ExecutionDate,
+			}, nil
 		} else {
-			return CreateResponse{TransferResponse: Transfer{}}, err
+			return CreateResponse{}, err
 		}
 	}
 }
