@@ -124,13 +124,13 @@ func MakeGetWaitingTransferEndpoint(s TransferService) endpoint.Endpoint {
 }
 
 type CreateRequest struct {
-	EmailAdressTransferPayer    string
-	EmailAdressTransferReceiver string
-	TransferAmount              float64
-	TransferType                string
-	ReceiverQuestion            string
-	ReceiverAnswer              string
-	ExecutionTransferDate       string
+	MailAdressTransferPayer    string
+	MailAdressTransferReceiver string
+	TransferAmount             float64
+	TransferType               string
+	ReceiverQuestion           string
+	ReceiverAnswer             string
+	ExecutionTransferDate      string
 }
 
 type CreateResponse struct {
@@ -146,14 +146,14 @@ type CreateResponse struct {
 func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateRequest)
-		fmt.Println(req.EmailAdressTransferPayer)
-		fmt.Println(req.EmailAdressTransferReceiver)
-		idPayer, err := s.GetIdFromMail(ctx, req.EmailAdressTransferPayer)
+		fmt.Println(req.MailAdressTransferPayer)
+		fmt.Println(req.MailAdressTransferReceiver)
+		idPayer, err := s.GetIdFromMail(ctx, req.MailAdressTransferPayer)
 		if err != nil {
 			fmt.Println("Payer ID not found")
 			return nil, err
 		}
-		idReceiver, err := s.GetIdFromMail(ctx, req.EmailAdressTransferReceiver)
+		idReceiver, err := s.GetIdFromMail(ctx, req.MailAdressTransferReceiver)
 		if err != nil {
 			fmt.Print("Reciever ID not found")
 			return nil, err
@@ -181,8 +181,8 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 			return CreateResponse{
 				transfer.Type,
 				fmt.Sprint(transfer.Amount),
-				req.EmailAdressTransferPayer,
-				req.EmailAdressTransferReceiver,
+				req.MailAdressTransferPayer,
+				req.MailAdressTransferReceiver,
 				transfer.ReceiverQuestion,
 				transfer.ReceiverAnswer,
 				transfer.ExecutionDate,
