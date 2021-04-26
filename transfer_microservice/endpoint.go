@@ -3,6 +3,7 @@ package transfer_microservice
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -125,7 +126,7 @@ func MakeGetWaitingTransferEndpoint(s TransferService) endpoint.Endpoint {
 type CreateRequest struct {
 	MailAdressTransferPayer    string
 	MailAdressTransferReceiver string
-	TransferAmount             float64
+	TransferAmount             string
 	TransferType               string
 	ReceiverQuestion           string
 	ReceiverAnswer             string
@@ -157,11 +158,13 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 			return nil, err
 		}
 
+		amount, _ := strconv.ParseFloat(req.TransferAmount, 64)
+
 		toAdd := Transfer{
 			ID:                "",
 			Type:              req.TransferType,
 			State:             0,
-			Amount:            req.TransferAmount,
+			Amount:            amount,
 			AccountPayerId:    idPayer,
 			AccountReceiverId: idReceiver,
 			ReceiverQuestion:  req.ReceiverQuestion,
