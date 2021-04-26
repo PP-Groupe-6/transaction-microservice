@@ -9,6 +9,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	httptransport "github.com/go-kit/kit/transport/http"
 )
@@ -25,14 +26,14 @@ func MakeHTTPHandler(s TransferService, logger log.Logger) http.Handler {
 		httptransport.ServerErrorEncoder(encodeError),
 	}
 
-	r.Methods("GET").Path("/transfer/").Handler(httptransport.NewServer(
+	r.Methods("GET").Path("/transfer/{id}").Handler(httptransport.NewServer(
 		e.GetTransferListEndpoint,
 		decodeGetTransferList,
 		encodeResponse,
 		options...,
 	))
 
-	r.Methods("GET").Path("/transfer/waiting").Handler(httptransport.NewServer(
+	r.Methods("GET").Path("/transfer/waiting/{id}").Handler(httptransport.NewServer(
 		e.GetWaitingTransferEndpoint,
 		decodeGetWaitingTransferRequest,
 		encodeResponse,
@@ -52,7 +53,19 @@ func MakeHTTPHandler(s TransferService, logger log.Logger) http.Handler {
 		encodeResponse,
 		options...,
 	))
-	return r
+
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"POST", "GET", "OPTIONS"},
+		//AllowedHeaders: []string{"Content-Type", "Accept", "Accept-Encoding", "Authorization"},
+		AllowedHeaders: []string{"*"},
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+
+	handler := c.Handler(r)
+
+	return handler
 }
 
 type errorer interface {
@@ -76,23 +89,27 @@ func decodeCreateRequest(_ context.Context, r *http.Request) (request interface{
 }
 
 func decodeGetWaitingTransferRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req GetWaitingTransferRequest
-	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
-		return nil, e
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, ErrBadRouting
 	}
-	return req, nil
+	return GetWaitingTransferRequest{ClientID: id}, nil
 }
 
 func decodeGetTransferList(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req GetTransferListRequest
-	if e := json.NewDecoder(r.Body).Decode(&req); e != nil {
-		return nil, e
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, ErrBadRouting
 	}
-	return req, nil
+	return GetTransferListRequest{ClientID: id}, nil
 }
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	if e, ok := response.(errorer); ok && e.error() != nil {
 		// Not a Go kit transport error, but a business-logic error.
 		// Provide those as HTTP errors.
@@ -105,6 +122,8 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	if err == nil {
 		panic("encodeError with nil error")
 	}
