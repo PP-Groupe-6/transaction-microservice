@@ -83,12 +83,12 @@ type GetWaitingTransferRequest struct {
 }
 
 type FormatedWaitingTransfer struct {
-	ID               string  `json:"transferId"`
-	Mail             string  `json:"mailAdressTransferPayer"`
-	Amount           float64 `json:"transferAmount"`
-	ExecutionDate    string  `json:"executionTransferDate"`
-	ReceiverQuestion string  `json:"receiverQuestion"`
-	ReceiverAnswer   string  `json:"receiverAnswer"`
+	ID               string `json:"transferId"`
+	Mail             string `json:"mailAdressTransferPayer"`
+	Amount           string `json:"transferAmount"`
+	ExecutionDate    string `json:"executionTransferDate"`
+	ReceiverQuestion string `json:"receiverQuestion"`
+	ReceiverAnswer   string `json:"receiverAnswer"`
 }
 
 type GetWaitingTransferListResponse struct {
@@ -112,7 +112,7 @@ func MakeGetWaitingTransferEndpoint(s TransferService) endpoint.Endpoint {
 			response = append(response, FormatedWaitingTransfer{
 				ID:               transfer.ID,
 				Mail:             accountInfo.Mail,
-				Amount:           transfer.Amount,
+				Amount:           fmt.Sprint(transfer.Amount),
 				ExecutionDate:    transfer.ExecutionDate,
 				ReceiverQuestion: transfer.ReceiverQuestion,
 				ReceiverAnswer:   transfer.ReceiverAnswer,
