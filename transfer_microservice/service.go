@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/rs/xid"
 )
 
 type TransferService interface {
@@ -179,12 +181,13 @@ func (s *transferService) Create(ctx context.Context, transfer Transfer) (Transf
 	if testID, _ := s.Read(ctx, transfer.ID); (testID != Transfer{}) {
 		return Transfer{}, ErrAlreadyExist
 	}
+	id := xid.New()
 	db := GetDbConnexion(s.DbInfos)
 
 	//validations
 
 	tx := db.MustBegin()
-	res := tx.MustExec("INSERT INTO transfer VALUES ('" + transfer.ID + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ExecutionDate + "')")
+	res := tx.MustExec("INSERT INTO transfer VALUES ('" + id.String() + "','" + transfer.Type + "'," + fmt.Sprint(transfer.State) + "," + fmt.Sprint(transfer.Amount) + ",'" + transfer.AccountPayerId + "','" + transfer.AccountReceiverId + "','" + transfer.ReceiverQuestion + "','" + transfer.ReceiverAnswer + "','" + transfer.ExecutionDate + "')")
 	tx.Commit()
 	db.Close()
 
