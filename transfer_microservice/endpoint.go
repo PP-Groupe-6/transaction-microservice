@@ -96,13 +96,14 @@ func MakeGetWaitingTransferEndpoint(s TransferService) endpoint.Endpoint {
 		if err != nil {
 			return nil, err
 		}
-		accountInfo, err := s.GetAccountInformation(ctx, req.ClientID)
-		if err != nil {
-			return nil, err
-		}
+
 		response := make([]FormatedWaitingTransfer, 0)
 
 		for _, transfer := range transfers {
+			accountInfo, err := s.GetAccountInformation(ctx, transfer.AccountPayerId)
+			if err != nil {
+				return nil, err
+			}
 			response = append(response, FormatedWaitingTransfer{
 				ID:               transfer.ID,
 				Mail:             accountInfo.Mail,
