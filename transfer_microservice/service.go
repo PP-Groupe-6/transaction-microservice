@@ -172,6 +172,8 @@ func (s *transferService) GetWaitingTransfer(ctx context.Context, id string) ([]
 	db := GetDbConnexion(s.DbInfos)
 	transfers := make([]*Transfer, 0)
 
+	fmt.Println("Receiver Id : " + id)
+
 	rows, err := db.Queryx("SELECT * FROM transfer WHERE account_transfer_receiver_id=$1 AND transfer_state="+fmt.Sprint(PENDING), id)
 
 	for rows.Next() {
