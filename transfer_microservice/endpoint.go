@@ -47,7 +47,7 @@ func MakeGetTransferListEndpoint(s TransferService) endpoint.Endpoint {
 		if err != nil {
 			return nil, err
 		}
-		
+		var accountInfo AccountInfo
 		response := make([]FormatedTransfer, 0)
 		for _, transfer := range transfers {
 			response = append(response, FormatedTransfer{
@@ -56,16 +56,15 @@ func MakeGetTransferListEndpoint(s TransferService) endpoint.Endpoint {
 				FullName: "",
 				Date:     transfer.ExecutionDate,
 			})
-
 			if transfer.AccountPayerId == req.ClientID {
 				response[len(response)-1].Role = "payer"
-				accountInfo, err := s.GetAccountInformation(ctx, transfer.AccountReceiverId)
+				accountInfo, err = s.GetAccountInformation(ctx, transfer.AccountReceiverId)
 				if err != nil {
 					return nil, err
 				}
 			} else if transfer.AccountReceiverId == req.ClientID {
 				response[len(response)-1].Role = "receiver"
-				accountInfo, err := s.GetAccountInformation(ctx, transfer.AccountPayerId)
+				accountInfo, err = s.GetAccountInformation(ctx, transfer.AccountPayerId)
 				if err != nil {
 					return nil, err
 				}
