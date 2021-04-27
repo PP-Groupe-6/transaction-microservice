@@ -153,7 +153,7 @@ func (s *transferService) UpdateTransferStatus(ctx context.Context, id string) e
 func (s *transferService) GetTransferList(ctx context.Context, id string) ([]*Transfer, error) {
 	db := GetDbConnexion(s.DbInfos)
 	transfers := make([]*Transfer, 0)
-	rows, err := db.Queryx("SELECT * FROM transfer WHERE account_transfer_payer_id=$1 OR account_transfer_receiver_id=$1", id)
+	rows, err := db.Queryx("SELECT * FROM transfer WHERE (account_transfer_payer_id=$1 OR account_transfer_receiver_id=$1) AND transfer_state !="+fmt.Sprint(PENDING), id)
 
 	for rows.Next() {
 		var t Transfer
