@@ -37,7 +37,7 @@ type FormatedTransfer struct {
 }
 
 type GetTransferListResponse struct {
-	Transfers []FormatedTransfer `json:"transfers"`
+	Transfers []FormatedTransfer `json:"transactions"`
 }
 
 func MakeGetTransferListEndpoint(s TransferService) endpoint.Endpoint {
