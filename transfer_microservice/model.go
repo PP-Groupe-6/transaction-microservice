@@ -18,3 +18,9 @@ type AccountInfo struct {
 	Mail    string  `json:"mail_adress,omitempty" db:"mail_adress"`
 	Amount  float64 `json:"amount,omitempty" db:"account_amount"`
 }
+
+const (
+	PENDING = 0
+	PAID    = 1
+	EXPIRED = 2
+)

@@ -8,12 +8,6 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-const (
-	PENDING = 0
-	PAID    = 1
-	EXPIRED = 2
-)
-
 type TransferEndpoints struct {
 	GetTransferListEndpoint    endpoint.Endpoint
 	GetWaitingTransferEndpoint endpoint.Endpoint
