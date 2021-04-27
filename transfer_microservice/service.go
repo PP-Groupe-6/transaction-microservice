@@ -82,6 +82,8 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 
 	tx := db.MustBegin()
 	// On mets à jour le solde du payeur
+	newPayerBalance := payerBalance - TransferToPay.Amount
+	fmt.Print("Previous balance : " + fmt.Sprint(payerBalance) + " new balance : " + fmt.Sprint(newPayerBalance))
 	resPayer := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(payerBalance-TransferToPay.Amount)+"' WHERE client_id=$1", TransferToPay.AccountPayerId)
 
 	if rows, errUpdate := resPayer.RowsAffected(); rows != 1 {
@@ -90,7 +92,9 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 	}
 
 	// On mets à jour le solde du receveur
-	resReciever := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(recieverBalance+TransferToPay.Amount)+"' WHERE client_id=$1", TransferToPay.AccountPayerId)
+	newReceiverBalance := recieverBalance + TransferToPay.Amount
+	fmt.Print("Previous balance : " + fmt.Sprint(recieverBalance) + " new balance : " + fmt.Sprint(newReceiverBalance))
+	resReciever := tx.MustExec("UPDATE account SET account_amount = '"+fmt.Sprint(newReceiverBalance)+"' WHERE client_id=$1", TransferToPay.AccountReceiverId)
 	if rows, errUpdate := resReciever.RowsAffected(); rows != 1 {
 		tx.Rollback()
 		return false, errUpdate
