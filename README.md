@@ -19,7 +19,7 @@ Pour tester le microservice nous conseillons l'outil [Postman](https://www.postm
 
 ## Comment paramétrer l'accès à la base de données
 
-Pour paramétrer l'accès à la base de données il suffit de modifier la structure info présente dans le (main)[https://github.com/PP-Groupe-6/transfer-microservice/blob/master/main.go] :
+Pour paramétrer l'accès à la base de données il suffit de modifier la structure info présente dans le [main](https://github.com/PP-Groupe-6/transfer-microservice/blob/master/main.go) :
 ```go
 	info := accountService.DbConnexionInfo{
 		DbUrl:    "postgre://",
