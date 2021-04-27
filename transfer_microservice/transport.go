@@ -47,7 +47,7 @@ func MakeHTTPHandler(s TransferService, logger log.Logger) http.Handler {
 		options...,
 	))
 
-	r.Methods("POST").Path("/transfer/pay").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("/transfer/pay/").Handler(httptransport.NewServer(
 		e.PostTransferStatusEndpoint,
 		decodePostTransferStatusEndpoint,
 		encodeResponse,

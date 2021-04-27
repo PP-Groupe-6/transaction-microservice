@@ -96,7 +96,7 @@ func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bo
 	}
 
 	//On change l'état de la facture a payer
-	resInvoice := tx.MustExec("UPDATE transfer SET transfer_state = '"+fmt.Sprint(PAID)+"' WHERE transfer_id=$1", TransferToPay.ID)
+	resInvoice := tx.MustExec("UPDATE transfer SET transfer_state = "+fmt.Sprint(PAID)+" WHERE transfer_id=$1", TransferToPay.ID)
 	if rows, errUpdate := resInvoice.RowsAffected(); rows != 1 {
 		tx.Rollback()
 		return false, errUpdate
@@ -142,7 +142,7 @@ func (s *transferService) UpdateTransferStatus(ctx context.Context, id string) e
 	db := GetDbConnexion(s.DbInfos)
 
 	tx := db.MustBegin()
-	tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(transfer.State)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', executed_transfer_date = '"+transfer.ExecutionDate+"' WHERE transfer_id=$1", id)
+	tx.MustExec("UPDATE transfer SET transfer_type = '"+transfer.Type+"', transfer_state="+fmt.Sprint(PAID)+", transfer_amount ="+fmt.Sprint(transfer.Amount)+", account_transfer_payer_id = '"+transfer.AccountPayerId+"', account_transfer_receiver_id = '"+transfer.AccountReceiverId+"', receiver_question = '"+transfer.ReceiverQuestion+"', receiver_answer = '"+transfer.ReceiverAnswer+"', executed_transfer_date = '"+transfer.ExecutionDate+"' WHERE transfer_id=$1", id)
 	tx.Commit()
 	db.Close()
 

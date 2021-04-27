@@ -190,7 +190,7 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 }
 
 type PostTransferStatusRequest struct {
-	ID string `json:"transfer_id"`
+	ID string
 }
 
 type PostTransferStatusResponse struct {
