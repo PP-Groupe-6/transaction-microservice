@@ -44,6 +44,7 @@ func NewTransferService(dbinfos DbConnexionInfo) TransferService {
 	}
 }
 func (s *transferService) PostTransferStatus(ctx context.Context, id string) (bool, error) {
+	fmt.Print("ID of transfer to process : " + id)
 	if id == "" {
 		return false, ErrNotAnId
 	}
