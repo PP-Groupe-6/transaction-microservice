@@ -190,7 +190,7 @@ func MakeCreateEndpoint(s TransferService) endpoint.Endpoint {
 }
 
 type PostTransferStatusRequest struct {
-	ID string
+	TransferId string
 }
 
 type PostTransferStatusResponse struct {
@@ -200,7 +200,7 @@ type PostTransferStatusResponse struct {
 func MakePostTransferStatusEndpoint(s TransferService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(PostTransferStatusRequest)
-		res, err := s.PostTransferStatus(ctx, req.ID)
+		res, err := s.PostTransferStatus(ctx, req.TransferId)
 
 		if err == nil && res {
 			return PostTransferStatusResponse{res}, nil
