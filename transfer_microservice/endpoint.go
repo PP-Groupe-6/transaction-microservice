@@ -47,26 +47,32 @@ func MakeGetTransferListEndpoint(s TransferService) endpoint.Endpoint {
 		if err != nil {
 			return nil, err
 		}
-		accountInfo, err := s.GetAccountInformation(ctx, req.ClientID)
-		if err != nil {
-			return nil, err
-		}
-		formatedName := accountInfo.Surname + " " + accountInfo.Name
+		
 		response := make([]FormatedTransfer, 0)
 		for _, transfer := range transfers {
 			response = append(response, FormatedTransfer{
 				Type:     "transfer",
 				Amount:   fmt.Sprint(transfer.Amount),
-				FullName: formatedName,
+				FullName: "",
 				Date:     transfer.ExecutionDate,
 			})
 
 			if transfer.AccountPayerId == req.ClientID {
 				response[len(response)-1].Role = "payer"
+				accountInfo, err := s.GetAccountInformation(ctx, transfer.AccountReceiverId)
+				if err != nil {
+					return nil, err
+				}
 			} else if transfer.AccountReceiverId == req.ClientID {
 				response[len(response)-1].Role = "receiver"
+				accountInfo, err := s.GetAccountInformation(ctx, transfer.AccountPayerId)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
+		formatedName := accountInfo.Surname + " " + accountInfo.Name
+		response[len(response)-1].FullName = formatedName
 		return GetTransferListResponse{response}, err
 
 	}
