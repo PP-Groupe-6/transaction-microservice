@@ -35,11 +35,11 @@ type GetTransferListRequest struct {
 }
 
 type FormatedTransfer struct {
-	Type     string  `json:"type"`
-	Role     string  `json:"role"`
-	FullName string  `json:"name"`
-	Amount   float64 `json:"transactionAmount"`
-	Date     string  `json:"transactionDate"`
+	Type     string `json:"type"`
+	Role     string `json:"role"`
+	FullName string `json:"name"`
+	Amount   string `json:"transactionAmount"`
+	Date     string `json:"transactionDate"`
 }
 
 type GetTransferListResponse struct {
@@ -62,7 +62,7 @@ func MakeGetTransferListEndpoint(s TransferService) endpoint.Endpoint {
 		for _, transfer := range transfers {
 			response = append(response, FormatedTransfer{
 				Type:     "transfer",
-				Amount:   transfer.Amount,
+				Amount:   fmt.Sprint(transfer.Amount),
 				FullName: formatedName,
 				Date:     transfer.ExecutionDate,
 			})
