@@ -92,7 +92,7 @@ type GetWaitingTransferListResponse struct {
 func MakeGetWaitingTransferEndpoint(s TransferService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(GetWaitingTransferRequest)
-		transfers, err := s.GetTransferList(ctx, req.ClientID)
+		transfers, err := s.GetWaitingTransfer(ctx, req.ClientID)
 		if err != nil {
 			return nil, err
 		}
