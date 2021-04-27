@@ -189,7 +189,7 @@ type PostTransferStatusRequest struct {
 }
 
 type PostTransferStatusResponse struct {
-	Done bool `json:"done"`
+	Result string `json:"result"`
 }
 
 func MakePostTransferStatusEndpoint(s TransferService) endpoint.Endpoint {
@@ -198,9 +198,9 @@ func MakePostTransferStatusEndpoint(s TransferService) endpoint.Endpoint {
 		res, err := s.PostTransferStatus(ctx, req.TransferId)
 
 		if err == nil && res {
-			return PostTransferStatusResponse{res}, nil
+			return PostTransferStatusResponse{"true"}, nil
 		} else {
-			return PostTransferStatusResponse{res}, err
+			return PostTransferStatusResponse{"false"}, err
 		}
 
 	}
