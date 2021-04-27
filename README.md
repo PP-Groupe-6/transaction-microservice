@@ -17,6 +17,19 @@ err := http.ListenAndServe(":<port>", accountService.MakeHTTPHandler(service, lo
 
 Pour tester le microservice nous conseillons l'outil [Postman](https://www.postman.com) et [la collection fournie avec le microservice](https://github.com/PP-Groupe-6/transfer-microservice/blob/master/Transfer.postman_collection.json).
 
+## Comment paramétrer l'accès à la base de données
+
+Pour paramétrer l'accès à la base de données il suffit de modifier la structure info présente dans le (main)[https://github.com/PP-Groupe-6/transfer-microservice/blob/master/main.go] :
+```go
+	info := accountService.DbConnexionInfo{
+		DbUrl:    "postgre://",
+		DbPort:   "5432",
+		DbName:   "prix_banque_test",
+		Username: "dev",
+		Password: "dev",
+	}
+```
+
 La liste des Url est la suivante :
 | URL                     | Méthode           | Param (JSON dans le body) | Retour               |
 | ----------------------- |:-----------------:| :------------------------:| :-------------------:|
